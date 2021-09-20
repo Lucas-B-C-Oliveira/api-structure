@@ -1,5 +1,6 @@
 const BaseRoute = require('./base/baseRoute')
 const Joi = require('joi')
+const Boom = require('boom')
 
 const failAction = (request, headers, error) => {
     throw error;
@@ -38,7 +39,7 @@ class HeroRoutes extends BaseRoute {
                     
                 } catch (error) {
                     console.log('It was bad', error)
-                    return "Internal Server Error!!!"
+                    return Boom.internal()
                 }
             }
         }
@@ -68,7 +69,7 @@ class HeroRoutes extends BaseRoute {
                     
                 } catch (error) {
                     console.log('It was bad', error)
-                    return "Internal Error!!!"
+                    return Boom.internal()
                 }
 
             }
@@ -101,18 +102,46 @@ class HeroRoutes extends BaseRoute {
 
                     const result = await this.db.update(id, data)
 
-                    if(result.modifiedCount !== 1) return {
-                        message: 'Unable to update'
-                    }
+                    if(result.modifiedCount !== 1) return Boom.preconditionFailed('Id not found in data base')
 
                     return { message: 'Hero successfully updated' }
 
                 } catch (error) {
                     console.log('It was bad', error)
-                    return "Internal Error!!!"
+                    return Boom.internal()
                 }
             }
             
+        }
+    }
+
+    delete() {
+        return {
+            path: '/heroes/{id}',
+            method: 'DELETE',
+            config: {
+                validate: {
+                    failAction,
+                    params: {
+                        id: Joi.string().required()
+                    }
+                }
+            },
+            handler: async (request) => {
+                try {
+
+                    const {id} = request.params
+                    const result = await this.db.delete(id)
+
+                    if(result.deletedCount !== 1) return Boom.preconditionFailed('Id not found in data base')
+
+                    return { message: 'Hero successfully removed'}
+                    
+                } catch (error) {
+                    console.log('It was bad', error)
+                    return Boom.internal()
+                }
+            }
         }
     }
 }
