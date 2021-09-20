@@ -2,7 +2,7 @@ const assert = require('assert')
 const api = require('../api')
 let app = {}
 
-describe('Heroes API Test Suite', function (){
+describe.only('Heroes API Test Suite', function () {
     this.beforeAll(async () => {
         app = await api
     })
@@ -44,14 +44,16 @@ describe('Heroes API Test Suite', function (){
         })
 
         const statusCode = result.statusCode
+        const errorResult = { "statusCode": 400, "error": "Bad Request", "message": "child \"limit\" fails because [\"limit\" must be a number]", "validation": { "source": "query", "keys": ["limit"] } }
 
-        assert.deepStrictEqual(statusCode, 500)
+
+        assert.deepStrictEqual(statusCode, 400)
+        assert.deepStrictEqual(result.payload, JSON.stringify(errorResult))
 
     })
-    
+
     it('Listar /heroes - Must filter an item', async () => {
-        const LIMIT_SIZE = "AEEE"
-        const NAME = "Spiderman-1631821478301"
+        const NAME = "Roland-1631821487087"
 
         const result = await app.inject({
             method: 'GET',
@@ -65,5 +67,5 @@ describe('Heroes API Test Suite', function (){
         assert.deepStrictEqual(data[0].name, NAME)
 
     })
-    
+
 })
