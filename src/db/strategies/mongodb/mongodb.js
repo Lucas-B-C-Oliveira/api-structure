@@ -42,9 +42,16 @@ class MongoDB extends ICrud {
     create(item) {
         return this._schema.create(item)
     }
+s
+    read(item, skip = 0, limit = 2) {
 
-    read(item, skip = 0, limit = 10) {
-        return this._schema.find(item).skip(skip).limit(limit)
+        if (isNaN(skip))
+            console.log('The type of skip is incorrect - typeof(skip): ', typeof skip) 
+
+        if (isNaN(limit))
+            console.log('The type of limit is incorrect - typeof(limit): ', typeof limit)
+
+        return this._schema.find(item).skip(parseInt(skip)).limit(parseInt(limit))
     }
 
     update(id, item) {
