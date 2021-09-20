@@ -13,7 +13,7 @@ const MOCK_INITIAL_HERO = {
 let mock_id = ''
 
 
-describe.only('Heroes API Test Suite', function () {
+describe('Heroes API Test Suite', function () {
     this.beforeAll(async () => {
         app = await api
 
@@ -65,7 +65,7 @@ describe.only('Heroes API Test Suite', function () {
         })
 
         const statusCode = result.statusCode
-        const errorResult = { "statusCode": 400, "error": "Bad Request", "message": "\"limit\" must be a number", "validation": { "source": "query", "keys": ["limit"] } }
+        const errorResult = {"statusCode":400,"error":"Bad Request","message":"child \"limit\" fails because [\"limit\" must be a number]","validation":{"source":"query","keys":["limit"]}}
 
 
         assert.deepStrictEqual(statusCode, 400)
@@ -74,7 +74,7 @@ describe.only('Heroes API Test Suite', function () {
     })
 
     it('Listar GET - /heroes - Must filter an item', async () => {
-        const NAME = "Roland-1631821487087"
+        const NAME = MOCK_INITIAL_HERO.name
 
         const result = await app.inject({
             method: 'GET',
