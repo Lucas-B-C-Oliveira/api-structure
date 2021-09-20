@@ -75,6 +75,46 @@ class HeroRoutes extends BaseRoute {
         }
         
     }
+
+    update() {
+        return {
+            path: '/heroes/{id}',
+            method: 'PATCH',
+            config: {
+                validate: {
+                    params: {
+                        id: Joi.string().required()
+                    },
+                    payload: {
+                        name: Joi.string().min(3).max(100),
+                        power: Joi.string().min(2).max(20)
+                    }
+                }
+            },
+            handler: async (request) => {
+                try {
+
+                    const { id } = request.params
+                    const { payload } = request
+                    const stringData = JSON.stringify(payload)
+                    const data = JSON.parse(stringData)
+
+                    const result = await this.db.update(id, data)
+
+                    if(result.modifiedCount !== 1) return {
+                        message: 'Unable to update'
+                    }
+
+                    return { message: 'Hero successfully updated' }
+
+                } catch (error) {
+                    console.log('It was bad', error)
+                    return "Internal Error!!!"
+                }
+            }
+            
+        }
+    }
 }
 
 module.exports = HeroRoutes

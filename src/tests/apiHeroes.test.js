@@ -1,14 +1,31 @@
 const assert = require('assert')
 const api = require('../api')
+
 let app = {}
 const MOCK_HERO_REGISTER = {
     name: 'Zeus',
     power: 'God of Olympus'
 }
+const MOCK_INITIAL_HERO = {
+    name: 'Aquiles',
+    power: 'agility'
+}
+let mock_id = ''
 
-describe('Heroes API Test Suite', function () {
+
+describe.only('Heroes API Test Suite', function () {
     this.beforeAll(async () => {
         app = await api
+
+        const result = await app.inject({
+            method: 'POST',
+            url: '/heroes',
+            payload: JSON.stringify(MOCK_INITIAL_HERO)
+        })
+
+        const data = JSON.parse(result.payload)
+        mock_id = data._id
+
     })
 
     it('listar GET - /heroes', async () => {
@@ -89,4 +106,43 @@ describe('Heroes API Test Suite', function () {
 
     })
 
+    it('Update PATCH - /heroes/:id', async () => {
+        const _id = mock_id
+        const expected = {
+            power: 'Battle Winner'
+        }
+
+        const result = await app.inject({
+            method: 'PATCH',
+            url: `/heroes/${_id}`,
+            payload: JSON.stringify(expected)
+        })
+
+        const statusCode = result.statusCode
+        const data = JSON.parse(result.payload)
+
+        assert.ok(statusCode === 200)
+        assert.deepStrictEqual(data.message, 'Hero successfully updated')
+    })
+    
+    it('Update PATCH - /heroes/:id - Must not update with incorrect ID', async () => {
+        const _id = `6144a82e2b3528f9d41155f3`
+
+        const expected = {
+            power: 'Battle Winner'
+        }
+
+        const result = await app.inject({
+            method: 'PATCH',
+            url: `/heroes/${_id}`,
+            payload: JSON.stringify(expected)
+        })
+        
+        const statusCode = result.statusCode
+        const data = JSON.parse(result.payload)
+
+        assert.ok(statusCode === 200)
+        assert.deepStrictEqual(data.message, 'Unable to update')
+    })
+    
 })
