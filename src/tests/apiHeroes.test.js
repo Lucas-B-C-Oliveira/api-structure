@@ -44,7 +44,7 @@ describe.only('Heroes API Test Suite', function () {
         })
 
         const statusCode = result.statusCode
-        const errorResult = { "statusCode": 400, "error": "Bad Request", "message": "child \"limit\" fails because [\"limit\" must be a number]", "validation": { "source": "query", "keys": ["limit"] } }
+        const errorResult = {"statusCode":400,"error":"Bad Request","message":"\"limit\" must be a number","validation":{"source":"query","keys":["limit"]}}
 
 
         assert.deepStrictEqual(statusCode, 400)
